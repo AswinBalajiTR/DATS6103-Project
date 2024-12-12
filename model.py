@@ -8,6 +8,14 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 from sklearn.preprocessing import LabelEncoder
 from statsmodels.tools.tools import add_constant
 
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, roc_auc_score, roc_curve
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.metrics import roc_auc_score, roc_curve
+
 
 #%%
 df=pd.read_csv("stroke_data.csv")
@@ -38,8 +46,6 @@ for col in numerical_columns:
     sns.boxplot(x=df[col])
     plt.title(f'Boxplot for {col}')
     plt.show()
-
-
 
 #%%
 for i in df.columns:
@@ -499,17 +505,6 @@ plt.yticks(rotation=0)
 plt.tight_layout()
 plt.show()
 
-# Highlight pairs with high correlation (absolute value > 0.8)
-high_correlation_pairs = correlation_matrix.stack().reset_index()
-high_correlation_pairs.columns = ['Variable 1', 'Variable 2', 'Correlation']
-high_correlation_pairs = high_correlation_pairs[
-    (high_correlation_pairs['Variable 1'] != high_correlation_pairs['Variable 2']) &
-    (abs(high_correlation_pairs['Correlation']) > 0.8)
-].sort_values(by='Correlation', ascending=False)
-
-# Display highly correlated pairs
-print("Highly Correlated Variable Pairs (|Correlation| > 0.8):")
-print(high_correlation_pairs)
 
 #%%
 # Select only numerical columns for VIF calculation
@@ -543,6 +538,53 @@ else:
     print("\nNo significant multicollinearity detected.")
 
 #%%
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, roc_curve, classification_report
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Separate features and target variable
+X = df.drop(columns=['stroke', 'id'], errors='ignore')  # Drop 'stroke' (target) and 'id' (identifier)
+y = df['stroke']
+
+# Logistic Regression Model
+log_reg = LogisticRegression(random_state=42, max_iter=1000)
+log_reg.fit(X, y)  # Train on the entire dataset
+
+# Create test datasets
+test_data_1 = df[df['stroke'] == 1]
+
+# Process test datasets
+X_test_1 = test_data_1.drop(columns=['stroke', 'id'], errors='ignore')
+y_test_1 = test_data_1['stroke']
+
+X_test_1 = pd.get_dummies(X_test_1, drop_first=True).reindex(columns=X.columns, fill_value=0)
+
+# Predictions for test dataset 1 (stroke == 1)
+y_pred_1 = log_reg.predict(X_test_1)
+y_pred_proba_1 = log_reg.predict_proba(X_test_1)[:, 1]
+
+# Evaluate metrics for test dataset 1
+accuracy_1 = accuracy_score(y_test_1, y_pred_1)
+conf_matrix_1 = confusion_matrix(y_test_1, y_pred_1)
+
+# Prepare data for plotting
+print("Accuracy : ",accuracy_1)
+datasets = ['Test Data (Stroke == 0)', 'Test Data (Stroke == 1)']
+confusion_matrices = [conf_matrix_1]
+
+# Plot confusion matrices
+for i, cm in enumerate(confusion_matrices):
+    plt.figure(figsize=(6, 5))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['No Stroke', 'Stroke'], yticklabels=['No Stroke', 'Stroke'])
+    plt.title(f'Confusion Matrix: {datasets[i]}', fontsize=14)
+    plt.xlabel('Predicted', fontsize=12)
+    plt.ylabel('Actual', fontsize=12)
+    plt.tight_layout()
+    plt.show()
+
+
+#%%
 
 from imblearn.over_sampling import SMOTE
 
@@ -571,10 +613,6 @@ from sklearn.model_selection import train_test_split
 X = df_bal.drop(columns=['stroke', 'id'], errors='ignore')
 y = df_bal['stroke']
 
-# Handle missing values
-imputer = SimpleImputer(strategy='median')
-X = pd.DataFrame(imputer.fit_transform(X), columns=X.columns)
-
 # Build the logistic regression model
 log_reg = LogisticRegression(max_iter=1000, random_state=42)
 
@@ -594,11 +632,10 @@ selected_features, ranking
 
 
 #%%
-
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, roc_curve
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -623,8 +660,6 @@ conf_matrix = confusion_matrix(y_test, y_pred)
 
 # Print results
 print(f"Accuracy: {accuracy:.2f}")
-print("\nConfusion Matrix:")
-print(conf_matrix)
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred))
 
@@ -638,6 +673,8 @@ plt.tight_layout()
 plt.show()
 
 fpr, tpr, _ = roc_curve(y_test, y_pred)
+roc_auc = roc_auc_score(y_test, y_pred) 
+
 plt.figure(figsize=(10, 6))
 plt.plot(fpr, tpr, color='blue', label=f"AUC-ROC = {roc_auc:.2f}")
 plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
@@ -650,32 +687,28 @@ plt.tight_layout()
 plt.show()
 
 
-
 #%%
-
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, roc_auc_score, roc_curve
-import seaborn as sns
-import matplotlib.pyplot as plt
-import pandas as pd
+from sklearn.tree import export_graphviz
+from sklearn.tree import plot_tree
 
 # Separate features and target variable
 X = df_bal.drop(columns=['stroke', 'id'], errors='ignore')  # Drop 'stroke' (target) and 'id' (identifier)
 y = df_bal['stroke']
 
-# Encode categorical variables (if any)
-X = pd.get_dummies(X, drop_first=True)
-
-# Handle missing values (if any)
-X = X.fillna(X.median())
-
 # Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
 # Build the Random Forest model
 rf_clf = RandomForestClassifier(n_estimators=100, random_state=42)
 rf_clf.fit(X_train, y_train)
+
+# Calculate training and testing scores
+training_score = rf_clf.score(X_train, y_train)  # Accuracy on training data
+testing_score = rf_clf.score(X_test, y_test)    # Accuracy on testing data
+
+# Print training and testing scores
+print(f"Training Accuracy: {training_score:.2f}")
+print(f"Testing Accuracy: {testing_score:.2f}")
 
 # Make predictions
 y_pred = rf_clf.predict(X_test)
@@ -688,8 +721,6 @@ roc_auc = roc_auc_score(y_test, y_pred_proba)
 
 # Print results
 print(f"Accuracy: {accuracy:.2f}")
-print("\nConfusion Matrix:")
-print(conf_matrix)
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred))
 print(f"AUC-ROC: {roc_auc:.2f}")
@@ -716,20 +747,20 @@ plt.grid(alpha=0.5)
 plt.tight_layout()
 plt.show()
 
+# Train a Random Forest with limited tree depth
+rf_clf_limited = RandomForestClassifier(n_estimators=1000, max_depth=4, random_state=42)
+rf_clf_limited.fit(X_train, y_train)
 
-#%%
+# Extract one tree from the limited model
+limited_tree = rf_clf_limited.estimators_[0]
+
+# Plot the smaller decision tree
+plt.figure(figsize=(15, 8))
+plot_tree(limited_tree, feature_names=X.columns, class_names=['No Stroke', 'Stroke'], filled=True, fontsize=10)
+plt.title("Decision Tree Visualization (Limited Depth)", fontsize=16)
+plt.show()
 
 
-#%%
-
-
-#%%
-
-
-#%%
-
-
-#%%
 
 #%%
 
