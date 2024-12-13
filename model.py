@@ -725,7 +725,14 @@ print("\nClassification Report:")
 print(classification_report(y_test, y_pred))
 print(f"AUC-ROC: {roc_auc:.2f}")
 
-
+# Visualize the confusion matrix
+plt.figure(figsize=(8, 6))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=['No Stroke', 'Stroke'], yticklabels=['No Stroke', 'Stroke'])
+plt.title('Confusion Matrix')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.tight_layout()
+plt.show()
 
 # Plot the ROC curve
 fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
