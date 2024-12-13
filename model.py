@@ -543,7 +543,9 @@ from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, roc
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-
+# Separate features and target variable
+X = df.drop(columns=['stroke', 'id'], errors='ignore')  # Drop 'stroke' (target) and 'id' (identifier)
+y = df['stroke']
 
 # Logistic Regression Model
 log_reg = LogisticRegression(random_state=42, max_iter=1000)
