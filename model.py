@@ -65,16 +65,7 @@ df1=df.copy()
 df1.head()
 
 #%%
-categorical_columns = df.select_dtypes(include=['object']).columns
 
-# Encode all categorical variables
-label_encoders = {}
-for col in categorical_columns:
-    le = LabelEncoder()
-    df[col] = le.fit_transform(df[col])
-    label_encoders[col] = le
-
-df.head()
 
 #%%
 
