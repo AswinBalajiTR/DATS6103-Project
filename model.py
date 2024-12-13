@@ -78,16 +78,7 @@ df.head()
 
 #%%
 
-# Function to perform Chi-Square test for categorical variables
-def chi_square_test(data, target_variable):
-    results = {}
-    categorical_columns = data.select_dtypes(include=['object', 'category']).columns
-    for col in categorical_columns:
-        if col != target_variable:  # Exclude the target variable
-            contingency_table = pd.crosstab(data[col], data[target_variable])
-            chi2, p, _, _ = stats.chi2_contingency(contingency_table)
-            results[col] = p  # Store p-values
-    return results
+
 
 # Specify target variable (replace 'stroke' with the actual target variable in your dataset)
 target_variable = 'stroke'  # Update if your dataset has a different name
