@@ -100,7 +100,15 @@ print(significant_results)
 
 
 
-
+#%%
+# Heatmap of the p-values for all categorical variables
+p_values_df = pd.DataFrame.from_dict(chi_square_results, orient='index', columns=['p_value']).sort_values(by='p_value')
+plt.figure(figsize=(10, 6))
+sns.heatmap(p_values_df, annot=True, cmap='coolwarm', cbar_kws={'label': 'P-value'})
+plt.title('Chi-Square Test P-Values for Categorical Variables')
+plt.xlabel('P-value')
+plt.ylabel('Categorical Variables')
+plt.show()
 
 
 #%%
