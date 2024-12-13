@@ -573,15 +573,7 @@ print("Accuracy : ",accuracy_1)
 datasets = ['Test Data (Stroke == 0)', 'Test Data (Stroke == 1)']
 confusion_matrices = [conf_matrix_1]
 
-# Plot confusion matrices
-for i, cm in enumerate(confusion_matrices):
-    plt.figure(figsize=(6, 5))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['No Stroke', 'Stroke'], yticklabels=['No Stroke', 'Stroke'])
-    plt.title(f'Confusion Matrix: {datasets[i]}', fontsize=14)
-    plt.xlabel('Predicted', fontsize=12)
-    plt.ylabel('Actual', fontsize=12)
-    plt.tight_layout()
-    plt.show()
+
 
 
 #%%
