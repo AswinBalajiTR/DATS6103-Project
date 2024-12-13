@@ -513,10 +513,6 @@ numerical_cols = df.select_dtypes(include=[np.number]).drop(columns=['id'], erro
 # Add a constant for VIF calculation
 X = add_constant(numerical_cols)
 
-# Calculate VIF for each feature
-vif_data = pd.DataFrame()
-vif_data["feature"] = X.columns
-vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
 
 # Drop the constant column
 vif_data = vif_data[vif_data['feature'] != 'const']
