@@ -663,6 +663,28 @@ print(f"Accuracy: {accuracy:.2f}")
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred))
 
+# Visualize the confusion matrix
+plt.figure(figsize=(8, 6))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=['No Stroke', 'Stroke'], yticklabels=['No Stroke', 'Stroke'])
+plt.title('Confusion Matrix')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.tight_layout()
+plt.show()
+
+fpr, tpr, _ = roc_curve(y_test, y_pred)
+roc_auc = roc_auc_score(y_test, y_pred) 
+
+plt.figure(figsize=(10, 6))
+plt.plot(fpr, tpr, color='blue', label=f"AUC-ROC = {roc_auc:.2f}")
+plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
+plt.title('Receiver Operating Characteristic (ROC) Curve', fontsize=16)
+plt.xlabel('False Positive Rate', fontsize=14)
+plt.ylabel('True Positive Rate', fontsize=14)
+plt.legend(loc="lower right")
+plt.grid(alpha=0.5)
+plt.tight_layout()
+plt.show()
 
 #%%
 from sklearn.tree import export_graphviz
