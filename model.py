@@ -589,17 +589,6 @@ for i, cm in enumerate(confusion_matrices):
 from imblearn.over_sampling import SMOTE
 
 # Encode categorical variables (if any)
-df_bal = df.drop(columns=['id','stroke'],axis=1)
-y=df['stroke']
-
-# Balance the training data using SMOTE
-smote = SMOTE(random_state=42)
-df_bal, y = smote.fit_resample(X, y)
-
-df_bal['stroke']=y
-
-df_bal['stroke'].value_counts()
-
 
 #%%
 
