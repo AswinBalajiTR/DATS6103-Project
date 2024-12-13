@@ -603,7 +603,32 @@ df_bal['stroke'].value_counts()
 
 #%%
 
+from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LogisticRegression
+from sklearn.feature_selection import RFE
+from sklearn.model_selection import train_test_split
 
+
+# Separate features and target variable
+X = df_bal.drop(columns=['stroke', 'id'], errors='ignore')
+y = df_bal['stroke']
+
+# Build the logistic regression model
+log_reg = LogisticRegression(max_iter=1000, random_state=42)
+
+# Perform Recursive Feature Elimination (RFE)
+rfe = RFE(estimator=log_reg, n_features_to_select=6)  # Selecting top 5 features
+rfe.fit(X, y)
+
+# Get the selected features
+selected_features = X.columns[rfe.support_]
+ranking = pd.DataFrame({
+    'Feature': X.columns,
+    'Rank': rfe.ranking_
+}).sort_values(by='Rank')
+
+# Output the selected features and their rankings
+selected_features, ranking
 
 
 #%%
