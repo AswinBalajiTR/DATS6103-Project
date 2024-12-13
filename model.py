@@ -734,16 +734,28 @@ plt.ylabel('Actual')
 plt.tight_layout()
 plt.show()
 
+# Plotting the ROC Curve
+
+# Calculate False Positive Rate (FPR) and True Positive Rate (TPR)
+fpr, tpr, thresholds = roc_curve(y_test, y_pred_proba)
+
+# Set the figure size
+plt.figure(figsize=(8, 5))
+
 # Plot the ROC curve
-fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
-plt.figure(figsize=(10, 6))
-plt.plot(fpr, tpr, color='blue', label=f"AUC-ROC = {roc_auc:.2f}")
-plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
-plt.title('Receiver Operating Characteristic (ROC) Curve', fontsize=16)
-plt.xlabel('False Positive Rate', fontsize=14)
-plt.ylabel('True Positive Rate', fontsize=14)
-plt.legend(loc="lower right")
-plt.grid(alpha=0.5)
+plt.plot(fpr, tpr, label=f'AUC-ROC: {roc_auc:.2f}', color='darkorange', linewidth=2)
+
+# Plot the diagonal reference line
+plt.plot([0, 1], [0, 1], linestyle='--', color='black', label='Random Guess')
+
+# Add labels, title, and legend
+plt.title('ROC Curve', fontsize=15)
+plt.xlabel('False Positive Rate (FPR)', fontsize=12)
+plt.ylabel('True Positive Rate (TPR)', fontsize=12)
+plt.legend(loc='lower right')
+plt.grid(True, linestyle='--', alpha=0.6)
+
+# Optimize layout and show the plot
 plt.tight_layout()
 plt.show()
 
