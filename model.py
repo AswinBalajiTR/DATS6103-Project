@@ -483,7 +483,27 @@ plt.show()
 
 
 #%%
+correlation_matrix = df.corr()
 
+# Define custom colormap: green for low, white in center, pink for high
+custom_cmap = sns.diverging_palette(150, 320, as_cmap=True)
+
+# Visualize correlation matrix using a heatmap with the custom colormap
+plt.figure(figsize=(12, 8))
+sns.heatmap(
+    correlation_matrix,
+    annot=True,
+    fmt=".2f",
+    cmap=custom_cmap,
+    cbar=True,
+    square=True,
+    center=0
+)
+plt.title("Correlation Matrix - Multicollinearity Check", fontsize=16)
+plt.xticks(rotation=45, ha='right')
+plt.yticks(rotation=0)
+plt.tight_layout()
+plt.show()
 
 
 #%%
