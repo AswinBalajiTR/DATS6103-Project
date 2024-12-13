@@ -5,6 +5,38 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
+#%%
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+from sklearn.preprocessing import LabelEncoder
+from statsmodels.tools.tools import add_constant
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, roc_auc_score, roc_curve
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.metrics import roc_auc_score, roc_curve
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #%%
 # Preparing the data for modeling
