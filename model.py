@@ -663,36 +663,6 @@ print(f"Accuracy: {accuracy:.2f}")
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred))
 
-# Import necessary libraries
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.metrics import roc_curve, roc_auc_score
-
-# Visualize the confusion matrix
-plt.figure(figsize=(8, 6))
-sns.heatmap(conf_matrix, annot=True, cmap='Blues', fmt='d',
-            xticklabels=['No Stroke', 'Stroke'],
-            yticklabels=['No Stroke', 'Stroke'])
-plt.title('Confusion Matrix', fontsize=16)
-plt.xlabel('Predicted Labels', fontsize=12)
-plt.ylabel('Actual Labels', fontsize=12)
-plt.show()
-
-# Calculate ROC curve and AUC
-fpr, tpr, thresholds = roc_curve(y_test, y_pred)
-roc_auc = roc_auc_score(y_test, y_pred)
-
-# Plot the ROC curve
-plt.figure(figsize=(10, 6))
-plt.plot(fpr, tpr, label=f"AUC-ROC = {roc_auc:.2f}", color='darkorange', linewidth=2)
-plt.plot([0, 1], [0, 1], linestyle='--', color='black', linewidth=1)
-plt.title('ROC Curve', fontsize=16)
-plt.xlabel('False Positive Rate', fontsize=14)
-plt.ylabel('True Positive Rate', fontsize=14)
-plt.legend(loc='lower right')
-plt.grid(alpha=0.3)
-plt.show()
-
 
 #%%
 from sklearn.tree import export_graphviz
