@@ -754,11 +754,6 @@ rf_clf_limited.fit(X_train, y_train)
 # Extract one tree from the limited model
 limited_tree = rf_clf_limited.estimators_[0]
 
-# Plot the smaller decision tree
-plt.figure(figsize=(15, 8))
-plot_tree(limited_tree, feature_names=X.columns, class_names=['No Stroke', 'Stroke'], filled=True, fontsize=10)
-plt.title("Decision Tree Visualization (Limited Depth)", fontsize=16)
-plt.show()
 
 
 
