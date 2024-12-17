@@ -1,4 +1,15 @@
+# %% [markdown]
+## **STROKE PREDICTION**
+
+#### **Team Members:** Aswin Balaji Thippa Ramesh, Barathkumar Anantharaj, Gowri Sriram Lakshmanan, Rahul Arvind
+
+#### **Dataset Link:** [Stroke Prediction Dataset](https://www.kaggle.com/datasets/fedesoriano/stroke-prediction-dataset)
+
+
+# %% [markdown]
+#### **1) Importing necessary packages**
 #%%
+#Importing necessary packages
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -7,37 +18,51 @@ import scipy.stats as stats
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from sklearn.preprocessing import LabelEncoder
 from statsmodels.tools.tools import add_constant
-
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, roc_auc_score, roc_curve
-import seaborn as sns
-import matplotlib.pyplot as plt
-import pandas as pd
 from sklearn.metrics import roc_auc_score, roc_curve
 
 
+# %% [markdown]
+#### **2) Walkthrough the data**
+
 #%%
+#Loading the data
 df=pd.read_csv("stroke_data.csv")
 df.head()
 
 #%%
+#Shape of the dataset
 print("(Rows,columns):",df.shape)
 
 #%%
+#Checking datatypes
 df.dtypes
 
+# %% [markdown]
+#### **3) EDA**
+
+# %% [markdown]
+##### **3.1** Checking if data balanced and removal of unnecessary values
 #%%
+#Checking total no of unique values in evry columns
 for i in df.columns:
-    print(i,":",df[i].nunique())
+    print(i,":",
+    df[i].nunique())
 
-print("Gender :")
-df['gender'].value_counts()
+print("\n",df['gender'].value_counts())
 
+#Checking if the dataset is balanced
+print("\n",df['stroke'].value_counts())
+print("The data is heavily biased")
+
+#Removing unnecessary values
 df["gender"]=df["gender"].replace("Other",np.nan)
-
-
+# %% [markdown]
+##### **3.2** Outliers Check
 #%%
+#Outliers Check
 numerical_columns = df.select_dtypes(include=[np.number]).columns
 
 # Visualize outliers with boxplots
@@ -46,8 +71,10 @@ for col in numerical_columns:
     sns.boxplot(x=df[col])
     plt.title(f'Boxplot for {col}')
     plt.show()
-
+# %% [markdown]
+##### **3.3** Checking and filling missing values
 #%%
+
 for i in df.columns:
     print(i,":",df[i].isna().sum())
 
@@ -56,10 +83,12 @@ for i in df.columns:
 df["bmi"]=df["bmi"].replace(np.nan,df["bmi"].mean())
 df["gender"]=df["gender"].replace(np.nan,df["gender"].mode()[0])
 
+print("After flling missing values: ")
 for i in df.columns:
     print(i,":",df[i].isna().sum())
 
-
+# %% [markdown]
+##### **3.4** Encoding Categorical Variables
 #%%
 df1=df.copy()
 df1.head()
@@ -76,6 +105,8 @@ for col in categorical_columns:
 
 df.head()
 
+# %% [markdown]
+##### **3.4** Can we determine statistically significant correlations or patterns in stroke occurrence based on categorical variables?
 #%%
 
 # Function to perform Chi-Square test for categorical variables
@@ -95,10 +126,8 @@ chi_square_results = chi_square_test(df1, target_variable)
 
 # Display statistically significant results
 significant_results = {k: v for k, v in chi_square_results.items() if v < 0.05}
-print("Statistically significant correlations with the target variable:")
+print("Statistically significant categorical correlations with the target variable:")
 print(significant_results)
-
-
 
 #%%
 # Heatmap of the p-values for all categorical variables
@@ -111,19 +140,9 @@ plt.ylabel('Categorical Variables')
 plt.show()
 
 
-#%%
-# Bar plot to show distribution of stroke occurrence across significant categorical variables
-for col in significant_results.keys():
-    plt.figure(figsize=(8, 6))
-    category_percentages = df.groupby(col)[target_variable].value_counts(normalize=True).unstack() * 100
-    category_percentages.plot(kind='bar', stacked=True)
-    plt.title(f'Stroke Occurrence by {col}')
-    plt.ylabel('Percentage')
-    plt.xlabel(col)
-    plt.legend(title=target_variable, loc='upper right')
-    plt.show()
 
-
+# %% [markdown]
+##### **3.6** Can we identify trends or variations in stroke risk based on time-related factors like age?
 #%%
 # Binning age into ranges for better visualization
 age_bins = [0, 18, 30, 40, 50, 60, 70, 80, 100]
@@ -165,6 +184,19 @@ plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.tight_layout()
 plt.show()
 
+# %% [markdown]
+##### **3.5** How does each predictor's distribution differ between different stroke cases ?
+#%%
+# Bar plot to show distribution of stroke occurrence across significant categorical variables
+for col in significant_results.keys():
+    plt.figure(figsize=(8, 6))
+    category_percentages = df.groupby(col)[target_variable].value_counts(normalize=True).unstack() * 100
+    category_percentages.plot(kind='bar', stacked=True)
+    plt.title(f'Stroke Occurrence by {col}')
+    plt.ylabel('Percentage')
+    plt.xlabel(col)
+    plt.legend(title=target_variable, loc='upper right')
+    plt.show()
 #%%
 # Filter data to include only stroke occurrences
 stroke_data = df1[df1['stroke'] == 1]
@@ -279,12 +311,12 @@ plt.show()
 plt.figure(figsize=(8, 6))
 sns.boxplot(
     data=stroke_data,
-    x='ever_married',
+    x='gender',
     y='avg_glucose_level',
     palette='coolwarm'
 )
-plt.title('Ever Married vs Average Glucose Level (Stroke Cases Only)', fontsize=16)
-plt.xlabel('Ever Married (No/Yes)', fontsize=14)
+plt.title('Gender vs Average Glucose Level (Stroke Cases Only)', fontsize=16)
+plt.xlabel('Gender', fontsize=14)
 plt.ylabel('Average Glucose Level', fontsize=14)
 plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.tight_layout()
@@ -507,6 +539,8 @@ plt.show()
 
 
 #%%
+#Checking for multicollinearity
+
 # Select only numerical columns for VIF calculation
 numerical_cols = df.select_dtypes(include=[np.number]).drop(columns=['id'], errors='ignore')
 
@@ -536,8 +570,13 @@ if not multicollinear_pairs.empty:
     print(f"\nBased on VIF, consider removing '{highest_vif_pair}' to reduce multicollinearity.")
 else:
     print("\nNo significant multicollinearity detected.")
+# %% [markdown]
+#### **4) Data Modelling**
+# %% [markdown]
+##### **4.1** Model Building on Imbalanced Data
 
 #%%
+
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, roc_curve, classification_report
 import matplotlib.pyplot as plt
@@ -583,8 +622,11 @@ for i, cm in enumerate(confusion_matrices):
     plt.tight_layout()
     plt.show()
 
+# %% [markdown]
+##### **4.2** Balancing the data using SMOTE
 
 #%%
+#Balancing the data
 
 from imblearn.over_sampling import SMOTE
 
@@ -600,7 +642,19 @@ df_bal['stroke']=y
 
 df_bal['stroke'].value_counts()
 
-
+# %% [markdown]
+##### **4.3** What are the key factors most strongly associated with the occurrence of strokes?
+#%%
+# Bar plot to show distribution of stroke occurrence across significant categorical variables
+for col in significant_results.keys():
+    plt.figure(figsize=(8, 6))
+    category_percentages = df.groupby(col)[target_variable].value_counts(normalize=True).unstack() * 100
+    category_percentages.plot(kind='bar', stacked=True)
+    plt.title(f'Stroke Occurrence by {col}')
+    plt.ylabel('Percentage')
+    plt.xlabel(col)
+    plt.legend(title=target_variable, loc='upper right')
+    plt.show()
 #%%
 
 from sklearn.impute import SimpleImputer
@@ -614,10 +668,10 @@ X = df_bal.drop(columns=['stroke', 'id'], errors='ignore')
 y = df_bal['stroke']
 
 # Build the logistic regression model
-log_reg = LogisticRegression(max_iter=1000, random_state=42)
+log_reg = RandomForestClassifier(n_estimators=100, random_state=42)
 
 # Perform Recursive Feature Elimination (RFE)
-rfe = RFE(estimator=log_reg, n_features_to_select=6)  # Selecting top 5 features
+rfe = RFE(estimator=log_reg, n_features_to_select=1)  # Selecting top 5 features
 rfe.fit(X, y)
 
 # Get the selected features
@@ -630,8 +684,12 @@ ranking = pd.DataFrame({
 # Output the selected features and their rankings
 selected_features, ranking
 
-
+# %% [markdown]
+##### **4.4** Linear Regression Model
 #%%
+
+#Linear Regression Model
+
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
@@ -686,8 +744,11 @@ plt.grid(alpha=0.5)
 plt.tight_layout()
 plt.show()
 
-
+# %% [markdown]
+##### **4.4** Random Forest Model
 #%%
+
+#Random Forest Model
 from sklearn.tree import export_graphviz
 from sklearn.tree import plot_tree
 
@@ -748,7 +809,7 @@ plt.tight_layout()
 plt.show()
 
 # Train a Random Forest with limited tree depth
-rf_clf_limited = RandomForestClassifier(n_estimators=1000, max_depth=4, random_state=42)
+rf_clf_limited = RandomForestClassifier(n_estimators=1000, max_depth=14, random_state=42)
 rf_clf_limited.fit(X_train, y_train)
 
 # Extract one tree from the limited model
