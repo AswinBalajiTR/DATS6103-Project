@@ -821,21 +821,3 @@ plot_tree(limited_tree, feature_names=X.columns, class_names=['No Stroke', 'Stro
 plt.title("Decision Tree Visualization (Limited Depth)", fontsize=16)
 plt.show()
 
-
-
-#%%
-
-
-#%%
-
-
-#%%
-
-
-#%%
-
-
-
-#%%
-
-#%%
