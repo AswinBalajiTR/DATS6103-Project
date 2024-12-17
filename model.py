@@ -34,16 +34,6 @@ df=pd.read_csv("stroke_data.csv")
 df.head()
 df.tail()
 df.info()
-df.describe()
-df.isnull().sum()
-df.shape
-df.columns
-df.dtypes
-df.nunique()
-df['stroke'].value_counts()
-df['stroke'].value_counts(normalize=True)
-
-
 #%%
 #Shape of the dataset
 print("(Rows,columns):",df.shape)
