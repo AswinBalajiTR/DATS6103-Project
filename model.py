@@ -22,6 +22,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, roc_auc_score, roc_curve
 from sklearn.metrics import roc_auc_score, roc_curve
+from sklearn.model_selection import GridSearchCV
 
 
 # %% [markdown]
